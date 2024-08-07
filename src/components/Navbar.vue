@@ -5,10 +5,9 @@
       </div>
       <div class="navbar-menu">
         <div class="navbar-start">
-          <router-link to="Category/"><a class="nav-item" >Home</a></router-link>
+          <router-link to="/"><a class="nav-item" >Home</a></router-link>
           <a class="nav-item" href="#">About</a>
           <a class="nav-item" href="#">Category</a>
-          <router-link to="/category/Beauty" class="nav-item" >Beauty</router-link>
         </div>
       </div>
     </nav>
