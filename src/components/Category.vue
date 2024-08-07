@@ -5,6 +5,7 @@
     </div>
     
     <div class="shownItem">
+      
       <h1 class="category-title"> {{ categoryName}}: {{ totalProducts }}</h1>
       <p>Showing {{ totalItemsShown }} / {{ totalProducts }}</p>
     </div>
@@ -46,81 +47,109 @@
   </div>
 </template>
 
+
 <script>
+import {ref,computed,onMounted,watch} from 'vue';
 import axios from 'axios';
 
 export default {
   name: 'Category',
   props: ['categoryName'],
-  data() {
-    return {
-      data: [],
-      isLoading: false,
-      totalProducts: 0,
-      currentPage: 1,
-      itemsPerPage: 20,
-      loadingImages: {},
-    };
-  },
-  computed: {
-    totalPages() {
-      return Math.ceil(this.totalProducts / this.itemsPerPage);
-    },
-    pageNumbers() {
-      return Array.from({ length: this.totalPages }, (_, index) => index + 1);
-    },
-    totalItemsShown() {
-      const skip = (this.currentPage - 1) * this.itemsPerPage;
-      return Math.min(skip + this.data.length, this.totalProducts);
-    }
-  },
-  watch: {
-    categoryName: {
-      handler(newVal, oldVal) {
-        this.fetchData();
-      },
-      immediate: true
-    }
-  },
-  methods: {
-    async fetchData() {
-      this.isLoading = true;
-      const skip = (this.currentPage - 1) * this.itemsPerPage;
+
+  setup(props) {
+  const data = ref([]);
+  const isLoading = ref(false);
+  const totalProducts = ref(0);
+  const currentPage= ref(1);
+  const itemsPerPage=ref(20);
+  const loadingImages = ref({});
+
+  const totalPages = computed(()=>{
+    return Math.ceil(totalProducts.value / itemsPerPage.value);
+  });
+
+  const pageNumbers = computed(() => {
+      return Array.from({ length: totalPages.value }, (_, index) => index + 1);
+    });
+
+    const totalItemsShown = computed(() => {
+      const skip = (currentPage.value - 1) * itemsPerPage.value;
+      return Math.min(skip + data.value.length, totalProducts.value);
+    });
+
+    const fetchData = async()=>{
+      isLoading.value=true;
+      const skip = (currentPage.value -1) * itemsPerPage.value;
       try {
-        const response = await axios.get(`https://dummyjson.com/products/category/${this.categoryName}?limit=${this.itemsPerPage}&skip=${skip}`);        this.data = response.data.products;
-        this.totalProducts = response.data.total;
+        const response = await axios.get(`https://dummyjson.com/products/category/${props.categoryName}?limit=${itemsPerPage.value}&skip=${skip}`);
+        data.value=response.data.products;
+        totalProducts.value = response.data.total;
 
         // Initialize loading state for images
-        this.data.forEach((product) => {
-          this.$set(this.loadingImages, product.id, true);
+        data.value.forEach((product) => {
+          loadingImages.value[product.id] = true;
         });
+
       } catch (error) {
-        console.log('ERROR FETCHING DATA', error);
-      } finally {
-        this.isLoading = false;
+        console.log("Error", error);
+      }finally{
+        isLoading.value=false;
       }
-    },
-    imageLoaded(id) {
-      this.$set(this.loadingImages, id, false);
-    },
-    changePage(pageNumber) {
-      if (pageNumber >= 1 && pageNumber <= this.totalPages) {
-        this.currentPage = pageNumber;
-        this.fetchData();
-        this.scrollToTop();
+    };
+
+    const imageLoaded = (id) =>{
+      loadingImages.value[id]=false;
+    };
+
+    const changePage = (pageNumber) => {
+      if (pageNumber >= 1 && pageNumber <= totalPages.value) {
+        currentPage.value = pageNumber;
+        fetchData();
+        scrollToTop();
       }
-    },
-    scrollToTop() {
+    };
+
+    const scrollToTop = () => {
       window.scrollTo({
         top: 0,
         behavior: 'smooth'
       });
-    },
-  },
-  mounted() {
-    this.fetchData();
-  },
-};
+    };
+
+    const formatPrice = (price) => {
+      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(price);
+    };
+
+    onMounted(() =>{
+      fetchData();
+    });
+
+     // Watch for changes to categoryName and fetch data again
+     watch(() => props.categoryName, () => {
+      currentPage.value = 1;  // Reset to the first page
+      fetchData();
+    });
+    
+
+    return {
+      data,
+      isLoading,
+      currentPage,
+      itemsPerPage,
+      loadingImages,
+      totalPages,
+      pageNumbers,
+      totalItemsShown,
+      totalProducts,
+      fetchData,
+      imageLoaded,
+      changePage,
+      scrollToTop,
+      formatPrice
+
+    };
+}
+}
 </script>
 
 <style >

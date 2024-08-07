@@ -7,6 +7,7 @@
         <div v-if="data.length === 0" class="empty-cart">
           Your cart is empty.
         </div>
+
         <div v-else>
           <div v-for="product in data" :key="product.id" class="cart-item card">
             <img :src="product.thumbnail" alt="Product Thumbnail" class="thumbnail" />
@@ -32,48 +33,68 @@
   </template>
   
   <script>
+  import { ref, onMounted, watch } from 'vue';
   import axios from 'axios';
   
   export default {
+    name: 'Cart',
     props: {
       userId: {
         type: Number,
         default: 1
       }
     },
-    data() {
-      return {
-        data: [],
-        isLoading: true,
-        total: 0,
-        discountedTotal: 0,
-        totalProducts: 0,
-        totalQuantity: 0
-      };
-    },
-    methods: {
-      async fetchedData() {
+    setup(props) {
+      const data = ref([]);
+      const isLoading = ref(true);
+      const total = ref(0);
+      const discountedTotal = ref(0);
+      const totalProducts = ref(0);
+      const totalQuantity = ref(0);
+  
+      const fetchData = async () => {
+        isLoading.value = true;
         try {
-          const response = await axios.get(`https://dummyjson.com/carts/${this.userId}`);
+          const response = await axios.get(`https://dummyjson.com/carts/${props.userId}`);
           const cart = response.data;
-          this.data = cart.products;
-          this.total = cart.total;
-          this.discountedTotal = cart.discountedTotal;
-          this.totalProducts = cart.totalProducts;
-          this.totalQuantity = cart.totalQuantity;
+          data.value = cart.products;
+          total.value = cart.total;
+          discountedTotal.value = cart.discountedTotal;
+          totalProducts.value = cart.totalProducts;
+          totalQuantity.value = cart.totalQuantity;
         } catch (error) {
           console.error("Error", error);
         } finally {
-          this.isLoading = false;
+          isLoading.value = false;
         }
-      },
-      formatPrice(value) {
+      };
+  
+      const formatPrice = (value) => {
         return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      }
+      };
+  
+      onMounted(() => {
+        fetchData();
+      });
+  
+      // Watch for changes in userId and fetch data when it changes
+      watch(
+        () => props.userId,
+        () => {
+          fetchData();
+        }
+      );
+  
+      return {
+        data,
+        isLoading,
+        total,
+        discountedTotal,
+        totalProducts,
+        totalQuantity,
+        formatPrice,
+      };
     },
-    mounted() {
-      this.fetchedData();
-    }
   };
   </script>
   

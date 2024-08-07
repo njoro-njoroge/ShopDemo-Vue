@@ -6,7 +6,7 @@
       </div>
      
       <router-link
-        v-for="(category, index) in data"
+        v-for="(category, index ) in data"
         :key="category.slug"
         :to="{ name: 'Category', params: { categoryName: category.slug } }"
         class="category-name"
@@ -18,34 +18,39 @@
 </template>
 
 <script>
+import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
 export default {
-  data() {
+  name: 'CategoryList',
+  setup() {
+    const data = ref([]);
+    const isLoading = ref(false);
+     
+    const fetchData = async () => {
+      isLoading.value = true;
+      try {
+        const response = await axios.get(`https://dummyjson.com/products/categories`);
+        data.value = response.data;
+      } catch (error) {
+        console.log("Error", error);
+      } finally {
+        isLoading.value = false;
+      }
+    };
+
+    onMounted(() => {
+      fetchData();
+    });
+
     return {
-      data: [],
-      isLoading: true,
+      data,
+      isLoading
     };
   },
-  methods: {
-    async fetched() {
-      try {
-        const response = await axios.get('https://dummyjson.com/products/categories');
-        this.data =response.data;
-        console.log('Fetched categories:', this.data); // Add this line for debugging
-      } catch (error) {
-        console.log('ERROR', error);
-      } finally {
-        this.isLoading = false;
-      }
-    },
-  },
-  mounted() {
-    this.fetched();
-  },
-
 };
 </script>
+
 
 <style scoped>
 
