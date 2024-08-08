@@ -1,34 +1,51 @@
+<template>
+  <Navbar :scrolled="isScrolled" :isLoggedIn="isLoggedIn" @logout="handleLogout" />
+  <main class="main-content">
+    <CategoryList v-if="routesWithCategoryList.includes(route.name)" />
+    <router-view></router-view>
+  </main>
+</template>
+
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { useStore } from 'vuex';
+import { useRoute } from 'vue-router';
 import Navbar from './components/Navbar.vue';
 import CategoryList from './components/CategoryList.vue';
 
+const store = useStore();
 const isScrolled = ref(false);
+const route = useRoute();
+
+const isLoggedIn = computed(() => store.getters.isLoggedIn);
+
+const routesWithCategoryList = ['Products', 'ProductCategory'];
 
 const handleScroll = () => {
-  if (window.scrollY > 50) {
-    isScrolled.value = true;
-  } else {
-    isScrolled.value = false;
-  }
+  isScrolled.value = window.scrollY > 50;
+};
+
+const handleLogout = () => {
+  store.commit('logout');
+  localStorage.removeItem('user'); // Remove user from localStorage
+  localStorage.removeItem('accessToken'); // Remove access token from localStorage
+  store.commit('setLoggedIn', false); // Update the store
 };
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll);
+
+  const user = localStorage.getItem('user');
+  if (user) {
+    store.commit('setUser', JSON.parse(user));
+    store.commit('setLoggedIn', true);
+  }
 });
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll);
 });
 </script>
-
-<template>
-  <Navbar :scrolled="isScrolled" />
-  <main class="main-content">
-    <CategoryList/>
-    <router-view></router-view>
-  </main>
-</template>
 
 <style scoped>
 .main-content {
