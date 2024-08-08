@@ -7,7 +7,10 @@
       <p>Showing {{ totalItemsShown }} / {{ totalProducts }}</p>
     </div>
     <div class="product-list">
-      <div class="product-item" v-for="x in data" :key="x.id">
+      <router-link 
+      class="product-item" 
+      v-for="x in data" :key="x.id"
+      :to="{name: 'ProductDetails', params: { productId: x.id }}">
         <div class="imgContainer">
           <div v-if="loadingImages[x.id]" class="ImgSpinner"></div>
           <img
@@ -22,7 +25,7 @@
         <p class="price">Price: {{ formatPrice(x.price) }}</p>
         <p><small>{{ x.stock }} items in stock</small></p>
         <p class="rating">Rating: {{ x.rating }}</p>
-      </div>
+      </router-link>
     </div>
     <div class="shownItem">
       <p>Showing {{ totalItemsShown }} / {{ totalProducts }}</p>
