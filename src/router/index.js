@@ -6,6 +6,7 @@ import Cart from '@/components/Cart.vue';
 import Login from '@/components/Login.vue';
 import Profile from '@/components/Profile.vue';
 import Categories from '@/components/Categories.vue';
+import About from '@/components/About.vue';
 import store from '@/store';
 
 const routes = [
@@ -27,10 +28,14 @@ const routes = [
     props:true
   },
   {
-    path:'/cart/:userId',
+    path:'/about',
+    name:'About',
+    component: About,
+  },
+  {
+    path:'/cart/',
     name:'Cart',
     component:Cart,
-    props:true
   },
   {
     path:'/categories',
