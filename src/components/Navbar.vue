@@ -6,7 +6,7 @@
       <div class="navbar-menu">
         <div class="navbar-start">
           <router-link to="/"><a class="nav-item" >Home</a></router-link>
-          <a class="nav-item" href="#">About</a>
+          <a class="nav-item" href="/About">About</a>
           <a class="nav-item" href="/Categories">All category</a>
     
           <a class="nav-item" href="/profile"v-if="isLoggedIn" >Profile</a>
