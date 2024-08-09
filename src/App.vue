@@ -2,6 +2,7 @@
   <Navbar :scrolled="isScrolled" :isLoggedIn="isLoggedIn" @logout="handleLogout" />
   <main class="main-content">
     <CategoryList v-if="routesWithCategoryList.includes(route.name)" />
+    <CartButton />
     <router-view></router-view>
   </main>
 </template>
@@ -12,6 +13,7 @@ import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
 import Navbar from './components/Navbar.vue';
 import CategoryList from './components/CategoryList.vue';
+import CartButton from './components/CartButton.vue';
 
 const store = useStore();
 const isScrolled = ref(false);
@@ -39,6 +41,7 @@ onMounted(() => {
   if (user) {
     store.commit('setUser', JSON.parse(user));
     store.commit('setLoggedIn', true);
+    // store.commit('setUserId',user.id);
   }
 });
 

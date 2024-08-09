@@ -33,18 +33,14 @@
   </template>
   
   <script>
-  import { ref, onMounted, watch } from 'vue';
+  import { ref, onMounted, watch, computed } from 'vue';
   import axios from 'axios';
+  import { useStore } from 'vuex';
   
   export default {
     name: 'Cart',
-    props: {
-      userId: {
-        type: Number,
-        default: 1
-      }
-    },
-    setup(props) {
+    
+    setup() {
       const data = ref([]);
       const isLoading = ref(true);
       const total = ref(0);
@@ -52,16 +48,28 @@
       const totalProducts = ref(0);
       const totalQuantity = ref(0);
   
+      const store = useStore();
+    
+      const userId = computed(() => store.getters.userId); 
+      console.log("User id ",userId.value);
+    /*
+      if userId is null or user not logged in assign a 
+      default value to fetched cart items from the endPoint
+      this is for development. remove during production to fetche the actual userId
+       */
+       const actualUserId = computed(() => userId.value == null ? 11 : userId.value);
+  
       const fetchData = async () => {
         isLoading.value = true;
         try {
-          const response = await axios.get(`https://dummyjson.com/carts/${props.userId}`);
+          const response = await axios.get(`https://dummyjson.com/carts/${actualUserId.value}`);
           const cart = response.data;
           data.value = cart.products;
           total.value = cart.total;
           discountedTotal.value = cart.discountedTotal;
           totalProducts.value = cart.totalProducts;
           totalQuantity.value = cart.totalQuantity;
+          store.commit('setCartCount',cart.totalQuantity);
         } catch (error) {
           console.error("Error", error);
         } finally {
@@ -79,7 +87,7 @@
   
       // Watch for changes in userId and fetch data when it changes
       watch(
-        () => props.userId,
+        () => actualUserId.value, // Watch the value of userId
         () => {
           fetchData();
         }
@@ -130,6 +138,7 @@
     align-items: center;
     width: 100%;
     max-width: 800px;
+    min-width: 500px;
     margin-bottom: 20px;
     padding: 10px;
     border: 1px solid #ccc;

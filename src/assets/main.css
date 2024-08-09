@@ -233,7 +233,80 @@ a {
     transform: rotate(360deg);
   }
 }
+/* ========== About us =========== */
+.about-us-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Arial', sans-serif;
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
+.company-info {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.company-info h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.company-info .intro {
+  font-size: 1.2rem;
+  color: #555;
+}
+
+.company-info .brand-name {
+  color: #007bff;
+  font-weight: bold;
+}
+
+.company-info p {
+  margin: 1rem 0;
+  line-height: 1.6;
+  color: #666;
+  text-align: justify;
+}
+
+.company-info .about-image {
+  width: 100%;
+  max-width: 700px;
+  height: auto;
+  margin: 1rem 0;
+  border-radius: 50px;
+}
+.contact-us {
+  background-color: #007bff;
+  color: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+}
+.contact-us h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+.contact-us p {
+  margin-bottom: 1rem;
+}
+.contact-us ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: justify;
+}
+
+.contact-us li {
+  margin: 0.5rem 0;
+  font-size: 1rem;
+}
 /* Product details  */
 .product-page {
   display: flex;
